@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import moonImg from "../../img/themes/moon.svg";
 import sunImg from "../../img/themes/sun.svg";
 import ButtonsSection from "../buttonsSection/ButtonsSection";
@@ -17,11 +17,11 @@ import {
 import { MyContext } from "../context/Context";
 
 const Calculator = () => {
-  const result = useRef(),
-    prevExpression = useRef(),
-    sun = useRef(),
+  const sun = useRef(),
     moon = useRef();
-
+  const [result, setResult] = useState("0");
+  const [preExpression, setPrevExpression] = useState();
+  console.log(preExpression);
   const activeTheme = (e) => {
     if (e.classList.contains("sun")) {
       moon.current.classList.remove("active");
@@ -52,14 +52,16 @@ const Calculator = () => {
           </ThemeInner>
         </ThemeContainer>
         <ResultSection>
-          <PrevExpression ref={prevExpression} className="prev-expression">
-            308<Action>x</Action>42
-          </PrevExpression>
-          <Result className="result" ref={result}>
-            12,936
-          </Result>
+          {preExpression && (
+            <PrevExpression className="prev-expression">
+              {preExpression.one}
+              <Action>{preExpression.action}</Action>
+              {preExpression.two}
+            </PrevExpression>
+          )}
+          <Result className="result">{result}</Result>
         </ResultSection>
-        <MyContext.Provider value={{ prevExpression, result }}>
+        <MyContext.Provider value={{ setResult, result, setPrevExpression }}>
           <ButtonsSection />
         </MyContext.Provider>
       </ContainerInner>

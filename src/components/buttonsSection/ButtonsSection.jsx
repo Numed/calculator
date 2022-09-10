@@ -35,6 +35,11 @@ const Button = styled.button`
   justify-content: center;
   cursor: pointer;
 
+  @media screen and (max-width: 325px) {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
   &.green {
     color: #53b7a9 !important;
   }
@@ -62,52 +67,75 @@ const Icons = styled.img`
 
 const ButtonsSection = () => {
   const [history, setHistory] = useState([]);
-  const { result, prevExpression } = useContext(MyContext);
-  const resultText = result.current;
+  const { result, setResult, setPrevExpression } = useContext(MyContext);
 
   useEffect(() => {
     setExpression();
+    // eslint-disable-next-line
   }, [history]);
 
   const clearAll = () => {
-    result.current.textContent = 0;
-    prevExpression.current.classList.add("hidden");
+    setResult(0);
+    setPrevExpression({});
     history.length = 0;
   };
 
   const setMinus = () => {
-    const textToArray = Array.from(result.current.textContent);
-    if (result.current.textContent.startsWith("-")) {
+    const textToArray = Array.from(result);
+    if (result.startsWith("-")) {
+      history.shift("-").toString().slice(1, 2);
+      setHistory([...history]);
       textToArray.shift("-");
     } else {
+      history.unshift("-").toString().slice(1, 2);
+      setHistory([...history]);
       textToArray.unshift("-");
     }
     const text = textToArray.toString().replace(/,/g, "");
-    result.current.textContent = text;
+    setResult(text);
   };
 
   const removeLastAction = () => {
-    const removeLastAction = result.current.textContent.slice(0, -1);
-    if (result.current.textContent.length !== 1) {
-      result.current.textContent = removeLastAction;
+    const removeLastAction = result.slice(0, -1);
+    if (result.length !== 1) {
+      setResult(removeLastAction);
       history.pop();
-    } else if (result.current.textContent === "-") {
-      result.current.textContent = 0;
+    } else if (result === "-") {
+      setResult(0);
     } else {
-      result.current.textContent = 0;
+      setResult(0);
       history.pop();
     }
   };
 
   const clickHandler = (e) => {
-    if (e !== "00" && result.current.textContent !== 0) {
+    if (e !== "00" && e !== "=") {
       setHistory([...history, e]);
+    }
+    if (e === "=") {
+      if (history.includes("-")) {
+        let splitExpresso = history.toString().replace(/,/g, "").split("-");
+        console.log(splitExpresso);
+        setResult(splitExpresso[0] - splitExpresso[1]);
+        // setHistory([]);
+        setPrevExpression({
+          one: splitExpresso[0],
+          action: "-",
+          two: splitExpresso[1],
+        });
+      }
+      // TODO other operations
     }
   };
 
   const setExpression = () => {
+    if (history.length === 0) {
+      // setResult(0);
+      setPrevExpression({});
+      return;
+    }
     const expression = history.toString().replace(/,/g, "");
-    result.current.textContent = expression;
+    setResult(expression);
   };
 
   return (
@@ -176,6 +204,7 @@ const ButtonsSection = () => {
         <Button
           className="button red"
           onClick={(e) => clickHandler(e.target.value)}
+          value={"+"}
         >
           +
         </Button>
@@ -231,6 +260,7 @@ const ButtonsSection = () => {
         <Button
           className="button red"
           onClick={(e) => clickHandler(e.target.value)}
+          value={"="}
         >
           =
         </Button>

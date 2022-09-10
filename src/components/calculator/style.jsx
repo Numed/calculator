@@ -7,6 +7,9 @@ export const Container = styled.section`
   width: 100%;
   height: 95vh;
   position: relative;
+  @media screen and (max-width: 950px) {
+    height: 100%;
+  }
 `;
 
 export const ContainerInner = styled.div`
@@ -20,6 +23,22 @@ export const ContainerInner = styled.div`
   height: 100%;
   border-radius: 40px;
   padding-top: 40px;
+
+  @media (max-width: 950px) {
+    width: 50%;
+    position: unset;
+    top: unset;
+    left: unset;
+    transform: unset;
+  }
+
+  @media (max-width: 650px) {
+    width: 70%;
+  }
+
+  @media (max-width: 450px) {
+    width: 90%;
+  }
 `;
 
 export const ThemeContainer = styled.div`
