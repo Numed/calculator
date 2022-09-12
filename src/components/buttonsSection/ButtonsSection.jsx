@@ -114,23 +114,21 @@ const ButtonsSection = () => {
     }
     if (e === "=") {
       if (history.includes("-")) {
-        let splitExpresso = history.toString().replace(/,/g, "").split("-");
-        console.log(splitExpresso);
-        setResult(splitExpresso[0] - splitExpresso[1]);
-        // setHistory([]);
+        let splitExpression = history.toString().replace(/,/g, "").split("-");
+        console.log(splitExpression);
+        setResult(splitExpression[0] - splitExpression[1]);
         setPrevExpression({
-          one: splitExpresso[0],
+          one: splitExpression[0],
           action: "-",
-          two: splitExpresso[1],
+          two: splitExpression[1],
         });
       }
-      // TODO other operations
+      // TODO: other operations
     }
   };
 
   const setExpression = () => {
     if (history.length === 0) {
-      // setResult(0);
       setPrevExpression({});
       return;
     }

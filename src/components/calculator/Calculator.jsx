@@ -17,11 +17,13 @@ import {
 import { MyContext } from "../context/Context";
 
 const Calculator = () => {
-  const sun = useRef(),
-    moon = useRef();
+
   const [result, setResult] = useState("0");
   const [preExpression, setPrevExpression] = useState();
-  console.log(preExpression);
+
+  const sun = useRef(),
+        moon = useRef();
+
   const activeTheme = (e) => {
     if (e.classList.contains("sun")) {
       moon.current.classList.remove("active");
