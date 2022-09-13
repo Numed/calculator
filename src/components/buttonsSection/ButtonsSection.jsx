@@ -1,69 +1,10 @@
 import { useState, useContext, useEffect } from "react";
-import styled from "styled-components";
 import divide from "../../img/imgIcons/divide.svg";
 import remove from "../../img/imgIcons/remove.svg";
 import plusOrMinus from "../../img/imgIcons/plusOrMinus.svg";
 import { MyContext } from "../context/Context";
-
-const ButtonsContainer = styled.div`
-  width: 100%;
-  height: 350px;
-  background-color: #f7f7f7;
-  border-radius: 20px;
-`;
-
-const ButtonsInner = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-`;
-
-const Button = styled.button`
-  width: 100%;
-  background-color: transparent;
-  border: none;
-  color: #43484e;
-  height: 62px;
-  font-weight: 700;
-  font-size: 32px;
-  line-height: 39px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  @media screen and (max-width: 325px) {
-    font-size: 24px;
-    line-height: 32px;
-  }
-
-  &.green {
-    color: #53b7a9 !important;
-  }
-
-  &.red {
-    color: #b4676b !important;
-  }
-`;
-
-const Icons = styled.img`
-  pointer-events: none;
-  width: 30px;
-
-  &.green {
-    filter: invert(59%) sepia(75%) saturate(267%) hue-rotate(122deg)
-      brightness(95%) contrast(89%);
-  }
-
-  &.red {
-    filter: invert(56%) sepia(7%) saturate(2445%) hue-rotate(308deg)
-      brightness(82%) contrast(99%);
-    width: 20px;
-  }
-`;
+import {Button, ButtonsInner, ButtonsContainer, Icons} from "./style";
+import { dataButtons } from "../data/data";
 
 const ButtonsSection = () => {
   const [history, setHistory] = useState([]);
@@ -111,21 +52,22 @@ const ButtonsSection = () => {
   const clickHandler = (e) => {
     if (e !== "00" && e !== "=") {
       setHistory([...history, e]);
+    }else if(history.length > 0){
+      setHistory([...history, e]);
     }
     if (e === "=") {
-      if (history.includes("-")) {
-        let splitExpression = history.toString().replace(/,/g, "").split("-");
-        console.log(splitExpression);
-        setResult(splitExpression[0] - splitExpression[1]);
-        setPrevExpression({
-          one: splitExpression[0],
-          action: "-",
-          two: splitExpression[1],
-        });
+      if (history.includes("-") && !history.toString().startsWith("-")) {
+        minusAction();
+      }else if ((history.includes("+"))){
+        plusAction();
+      }else if ((history.includes("*"))){
+        multiplyAction();
+      }else{
+        divideAction();
       }
-      // TODO: other operations
     }
   };
+
 
   const setExpression = () => {
     if (history.length === 0) {
@@ -135,6 +77,46 @@ const ButtonsSection = () => {
     const expression = history.toString().replace(/,/g, "");
     setResult(expression);
   };
+
+  const minusAction = () => {
+    let splitExpression = history.toString().replace(/,/g, "").split("-");
+    setResult(+splitExpression[0] - +splitExpression[1]);
+    setPrevExpression({
+      one: +splitExpression[0],
+      action: "-",
+      two: +splitExpression[1],
+    });
+  }
+
+   const plusAction = () => {
+    let splitExpression = history.toString().replace(/,/g, "").split("+");
+    setResult(+splitExpression[0] + +splitExpression[1]);
+    setPrevExpression({
+      one: +splitExpression[0],
+      action: "+",
+      two: +splitExpression[1],
+    });
+  }
+
+   const multiplyAction = () => {
+    let splitExpression = history.toString().replace(/,/g, "").split("*");
+    setResult(+splitExpression[0] * +splitExpression[1]);
+    setPrevExpression({
+      one: +splitExpression[0],
+      action: "*",
+      two: +splitExpression[1],
+    });
+  }
+
+   const divideAction = () => {
+    let splitExpression = history.toString().replace(/,/g, "").split("/");
+    setResult(+splitExpression[0] / +splitExpression[1]);
+    setPrevExpression({
+      one: +splitExpression[0],
+      action: "/",
+      two: +splitExpression[1],
+    });
+  }
 
   return (
     <ButtonsContainer className="button-container">
@@ -151,117 +133,19 @@ const ButtonsSection = () => {
         <Button
           className="button"
           onClick={(e) => clickHandler(e.target.value)}
+          value={"/"}
         >
           <Icons className="red" src={divide} alt="divide" />
         </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value="1"
-        >
-          1
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value="2"
-        >
-          2
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value="3"
-        >
-          3
-        </Button>
-        <Button className="red" onClick={(e) => clickHandler(e.target.value)}>
-          x
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"4"}
-        >
-          4
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"5"}
-        >
-          5
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"6"}
-        >
-          6
-        </Button>
-        <Button
-          className="button red"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"+"}
-        >
-          +
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"7"}
-        >
-          7
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"8"}
-        >
-          8
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"9"}
-        >
-          9
-        </Button>
-        <Button
-          className="button red"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"-"}
-        >
-          -
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"."}
-        >
-          .
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"0"}
-        >
-          0
-        </Button>
-        <Button
-          className="button"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"00"}
-        >
-          00
-        </Button>
-        <Button
-          className="button red"
-          onClick={(e) => clickHandler(e.target.value)}
-          value={"="}
-        >
-          =
-        </Button>
+        {dataButtons.map(({className, value}, i)=>{
+          return(
+            <Button key={i} 
+            className={className} 
+            onClick={(e) => clickHandler(e.target.value)} 
+            value={value}>
+                {value}
+            </Button>
+        )})}
       </ButtonsInner>
     </ButtonsContainer>
   );
