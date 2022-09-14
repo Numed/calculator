@@ -16,7 +16,7 @@ const ButtonsSection = () => {
   }, [history]);
 
   const clearAll = () => {
-    setResult(0);
+    setResult("0");
     setPrevExpression({});
     history.length = 0;
   };
@@ -42,20 +42,20 @@ const ButtonsSection = () => {
       setResult(removeLastAction);
       history.pop();
     } else if (result === "-") {
-      setResult(0);
+      setResult("0");
     } else {
-      setResult(0);
+      setResult("0");
       history.pop();
     }
   };
 
   const clickHandler = (e) => {
-    if (e !== "00" && e !== "=") {
+    if (e !== "00" && e !== "=" && e !=="+" && e !=="-" && e !=="*" && e !== "/") {
       setHistory([...history, e]);
-    }else if(history.length > 0){
+    }else if (history.length > 0 && e !== "="){
       setHistory([...history, e]);
     }
-    if (e === "=") {
+    if (e === "=" && history.length > 2) {
       if (history.includes("-") && !history.toString().startsWith("-")) {
         minusAction();
       }else if ((history.includes("+"))){
@@ -68,11 +68,35 @@ const ButtonsSection = () => {
     }
   };
 
+  const findDuplicates = arr => {
+    let duplicats = arr.filter((item, index) => arr.indexOf(item) !== index);
+    // eslint-disable-next-line
+    let someArr = duplicats.map(item => {
+      if(item === "-" || item === "+" || item === "*" || item === "/"){
+        return item;
+      }
+    });
+    return someArr.toString().replace(/,/g, "");
+}
 
   const setExpression = () => {
     if (history.length === 0) {
       setPrevExpression({});
       return;
+    }else if(findDuplicates(history)){
+      const duplicate = findDuplicates(history);
+      if(duplicate === "-"){
+        minusAction();
+      }
+      else if(duplicate === "+"){
+        plusAction();
+      }
+      else if(duplicate === "*"){
+        multiplyAction();
+      }
+      else if(duplicate === "/"){
+        divideAction();
+      }
     }
     const expression = history.toString().replace(/,/g, "");
     setResult(expression);
@@ -80,42 +104,50 @@ const ButtonsSection = () => {
 
   const minusAction = () => {
     let splitExpression = history.toString().replace(/,/g, "").split("-");
-    setResult(+splitExpression[0] - +splitExpression[1]);
+    const expression = +splitExpression[0] - +splitExpression[1];
+    setResult(expression);
     setPrevExpression({
       one: +splitExpression[0],
       action: "-",
       two: +splitExpression[1],
     });
+    setHistory([expression]);
   }
 
    const plusAction = () => {
     let splitExpression = history.toString().replace(/,/g, "").split("+");
-    setResult(+splitExpression[0] + +splitExpression[1]);
+    const expression = +splitExpression[0] + +splitExpression[1];
+    setResult(expression);
     setPrevExpression({
-      one: +splitExpression[0],
+      one: splitExpression[0],
       action: "+",
-      two: +splitExpression[1],
+      two: splitExpression[1],
     });
+    setHistory([expression]);
   }
 
    const multiplyAction = () => {
     let splitExpression = history.toString().replace(/,/g, "").split("*");
-    setResult(+splitExpression[0] * +splitExpression[1]);
+    const expression = +splitExpression[0] * +splitExpression[1];
+    setResult(expression);
     setPrevExpression({
       one: +splitExpression[0],
       action: "*",
       two: +splitExpression[1],
     });
+    setHistory([expression]);
   }
 
    const divideAction = () => {
     let splitExpression = history.toString().replace(/,/g, "").split("/");
-    setResult(+splitExpression[0] / +splitExpression[1]);
+    const expression = +splitExpression[0] / +splitExpression[1];
+    setResult(expression);
     setPrevExpression({
       one: +splitExpression[0],
       action: "/",
       two: +splitExpression[1],
     });
+    setHistory([expression]);
   }
 
   return (
