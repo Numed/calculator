@@ -1,14 +1,23 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import divide from "../../img/imgIcons/divide.svg";
 import remove from "../../img/imgIcons/remove.svg";
 import plusOrMinus from "../../img/imgIcons/plusOrMinus.svg";
-import { MyContext } from "../context/Context";
-import {Button, ButtonsInner, ButtonsContainer, Icons} from "./style";
+import { MyContext } from "../contexts/Context";
+import { Button, ButtonsInner, ButtonsContainer, Icons } from "./style";
 import { dataButtons } from "../data/data";
+import { useCustomHooks } from "../hooks/htpp.hook";
 
 const ButtonsSection = () => {
-  const [history, setHistory] = useState([]);
   const { result, setResult, setPrevExpression } = useContext(MyContext);
+  const {
+    divideAction,
+    history,
+    setHistory,
+    minusAction,
+    plusAction,
+    multiplyAction,
+  } = useCustomHooks();
+  let copyHistory = [];
 
   useEffect(() => {
     setExpression();
@@ -23,14 +32,20 @@ const ButtonsSection = () => {
 
   const setMinus = () => {
     const textToArray = Array.from(result);
-    if (result.startsWith("-")) {
-      history.shift("-").toString().slice(1, 2);
+    console.log(result.length);
+    if (result.startsWith("–") && result.length > 1) {
+      history.shift("–").toString().slice(1, 2);
       setHistory([...history]);
-      textToArray.shift("-");
+      textToArray.shift("–");
+    } else if (result.startsWith("–")) {
+      textToArray.shift("–");
+      history.shift("–").toString().slice(1, 2);
+      history.push("0");
+      setHistory([...history]);
     } else {
-      history.unshift("-").toString().slice(1, 2);
+      history.unshift("–").toString().slice(1, 2);
       setHistory([...history]);
-      textToArray.unshift("-");
+      textToArray.unshift("–");
     }
     const text = textToArray.toString().replace(/,/g, "");
     setResult(text);
@@ -50,115 +65,100 @@ const ButtonsSection = () => {
   };
 
   const clickHandler = (e) => {
-    const actions = ["+", "-", "*", "/"];
-    // eslint-disable-next-line
-    actions.map(action => {
-     if(e === "+" && history[history.length - 1].includes(action) ||
-     e === "-" && history[history.length - 1].includes(action) || 
-     e === "*" && history[history.length - 1].includes(action) ||
-     e === "/" && history[history.length - 1].includes(action)){
-      history.pop();
-     }
-    })
-    if (e !== "00" && e !== "=" && e !=="+" && e !=="-" && e !=="*" && e !== "/") {
-      setHistory([...history, e]);
-    }else if (history.length > 0 && e !== "="){
-      setHistory([...history, e]);
+    console.log("Inside Fucntion History", history);
+    checkAction(e);
+    if (
+      e !== "0" &&
+      e !== "00" &&
+      e !== "=" &&
+      e !== "+" &&
+      e !== "-" &&
+      e !== "*" &&
+      e !== "/"
+    ) {
+      setHistory((prev) => [...prev, e]);
+      copyHistory = [...history, e];
+      return copyHistory;
+    } else if (history.length > 0 && e !== "=") {
+      setHistory((prev) => [...prev, e]);
+      copyHistory = [...history, e];
+      return copyHistory;
     }
     if (e === "=" && history.length > 2) {
       if (history.includes("-") && !history.toString().startsWith("-")) {
         minusAction();
-      }else if ((history.includes("+"))){
+      } else if (history.includes("+")) {
         plusAction();
-      }else if ((history.includes("*"))){
+      } else if (history.includes("*")) {
         multiplyAction();
-      }else{
+      } else {
         divideAction();
       }
     }
   };
 
-  const findDuplicates = arr => {
+  const checkAction = (e) => {
+    const actions = ["+", "-", "*", "/"];
+    // eslint-disable-next-line
+    actions.map((action) => {
+      if (
+        (e === "+" && history[history.length - 1] === action) ||
+        (e === "-" && history[history.length - 1] === action) ||
+        (e === "*" && history[history.length - 1] === action) ||
+        (e === "/" && history[history.length - 1] === action)
+      ) {
+        history.pop();
+      } else if (
+        history[history.length - 1] !== action &&
+        history.includes(action)
+      ) {
+        sliceExpression(action);
+      }
+    });
+  };
+
+  const sliceExpression = (action) => {
+    if (action === "-") {
+      minusAction();
+    } else if (action === "+") {
+      plusAction();
+    } else if (action === "*") {
+      multiplyAction();
+    } else if (action === "/") {
+      divideAction();
+    }
+  };
+
+  const findDuplicates = (arr) => {
     let duplicats = arr.filter((item, index) => arr.indexOf(item) !== index);
     // eslint-disable-next-line
-    let someArr = duplicats.map(item => {
-      if(item === "-" || item === "+" || item === "*" || item === "/"){
+    let someArr = duplicats.map((item) => {
+      if (item === "-" || item === "+" || item === "*" || item === "/") {
         return item;
       }
     });
     return someArr.toString().replace(/,/g, "");
-}
+  };
 
   const setExpression = () => {
     if (history.length === 0) {
       setPrevExpression({});
       return;
-    }else if(findDuplicates(history)){
+    } else if (findDuplicates(history)) {
       const duplicate = findDuplicates(history);
-      if(duplicate === "-"){
+      if (duplicate === "-") {
         minusAction(duplicate);
-      }
-      else if(duplicate === "+"){
+      } else if (duplicate === "+") {
         plusAction(duplicate);
-      }
-      else if(duplicate === "*"){
+      } else if (duplicate === "*") {
         multiplyAction(duplicate);
-      }
-      else if(duplicate === "/"){
+      } else if (duplicate === "/") {
         divideAction(duplicate);
       }
     }
     const expression = history.toString().replace(/,/g, "");
     setResult(expression);
   };
-
-  const minusAction = (duplicate) => {
-    let splitExpression = history.toString().replace(/,/g, "").split("-");
-    const expression = +splitExpression[0] - +splitExpression[1];
-    setResult(expression);
-    setPrevExpression({
-      one: +splitExpression[0],
-      action: "-",
-      two: +splitExpression[1],
-    });
-    duplicate !== undefined ? setHistory([expression, duplicate]) : setHistory([expression]);
-  }
-
-   const plusAction = (duplicate) => {
-    let splitExpression = history.toString().replace(/,/g, "").split("+");
-    const expression = +splitExpression[0] + +splitExpression[1];
-    setResult(expression);
-    setPrevExpression({
-      one: splitExpression[0],
-      action: "+",
-      two: splitExpression[1],
-    });
-    duplicate !== undefined ? setHistory([expression, duplicate]) : setHistory([expression]);
-  }
-
-   const multiplyAction = (duplicate) => {
-    let splitExpression = history.toString().replace(/,/g, "").split("*");
-    const expression = +splitExpression[0] * +splitExpression[1];
-    setResult(expression);
-    setPrevExpression({
-      one: +splitExpression[0],
-      action: "*",
-      two: +splitExpression[1],
-    });
-    duplicate !== undefined ? setHistory([expression, duplicate]) : setHistory([expression]);
-  }
-
-   const divideAction = (duplicate) => {
-    let splitExpression = history.toString().replace(/,/g, "").split("/");
-    const expression = +splitExpression[0] / +splitExpression[1];
-    setResult(expression);
-    setPrevExpression({
-      one: +splitExpression[0],
-      action: "/",
-      two: +splitExpression[1],
-    });
-    duplicate !== undefined ? setHistory([expression, duplicate]) : setHistory([expression]);
-  }
 
   return (
     <ButtonsContainer className="button-container">
@@ -179,15 +179,18 @@ const ButtonsSection = () => {
         >
           <Icons className="red" src={divide} alt="divide" />
         </Button>
-        {dataButtons.map(({className, value}, i)=>{
-          return(
-            <Button key={i} 
-            className={className} 
-            onClick={(e) => clickHandler(e.target.value)} 
-            value={value}>
-                {value}
+        {dataButtons.map(({ className, value }, i) => {
+          return (
+            <Button
+              key={i}
+              className={className}
+              onClick={(e) => clickHandler(e.target.value)}
+              value={value}
+            >
+              {value}
             </Button>
-        )})}
+          );
+        })}
       </ButtonsInner>
     </ButtonsContainer>
   );

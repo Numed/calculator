@@ -14,7 +14,7 @@ import {
   ResultSection,
   ImgIcon,
 } from "./style";
-import { MyContext } from "../context/Context";
+import { MyContext } from "../contexts/Context";
 
 const Calculator = () => {
 
