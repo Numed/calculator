@@ -55,13 +55,13 @@ const Calculator = () => {
         </ThemeContainer>
         <ResultSection>
           {preExpression && (
-            <PrevExpression className="prev-expression">
+            <PrevExpression className="prev-expression" style={result.length > 15 ? {fontSize: "22px"} : null}>
               {preExpression.one}
               <Action>{preExpression.action}</Action>
               {preExpression.two}
             </PrevExpression>
           )}
-          <Result className="result">{result}</Result>
+          <Result className="result" style={result.length > 30 ? {fontSize: "28px", overflowY: "scroll"} : null}>{result}</Result>
         </ResultSection>
         <MyContext.Provider value={{ setResult, result, setPrevExpression }}>
           <ButtonsSection />

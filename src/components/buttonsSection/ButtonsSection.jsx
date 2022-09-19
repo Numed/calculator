@@ -32,7 +32,6 @@ const ButtonsSection = () => {
 
   const setMinus = () => {
     const textToArray = Array.from(result);
-    console.log(result.length);
     if (result.startsWith("–") && result.length > 1) {
       history.shift("–").toString().slice(1, 2);
       setHistory([...history]);
@@ -56,7 +55,7 @@ const ButtonsSection = () => {
     if (result.length !== 1) {
       setResult(removeLastAction);
       history.pop();
-    } else if (result === "-") {
+    } else if (result === "–") {
       setResult("0");
     } else {
       setResult("0");
@@ -65,7 +64,6 @@ const ButtonsSection = () => {
   };
 
   const clickHandler = (e) => {
-    console.log("Inside Fucntion History", history);
     checkAction(e);
     if (
       e !== "0" &&
@@ -74,12 +72,12 @@ const ButtonsSection = () => {
       e !== "+" &&
       e !== "-" &&
       e !== "*" &&
-      e !== "/"
+      e !== "/" 
     ) {
       setHistory((prev) => [...prev, e]);
       copyHistory = [...history, e];
       return copyHistory;
-    } else if (history.length > 0 && e !== "=") {
+    } else if (history.length > 0 && e !== "="  ) {
       setHistory((prev) => [...prev, e]);
       copyHistory = [...history, e];
       return copyHistory;

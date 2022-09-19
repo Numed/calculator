@@ -1,6 +1,6 @@
 {
   "name": "simple",
-  "homepage": "https://numed.github.io",
+  "homepage": "https://numed.github.io/calculator",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

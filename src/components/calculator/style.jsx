@@ -129,4 +129,7 @@ export const Result = styled.span`
   letter-spacing: 0.2em;
   margin-top: 5px;
   color: #43484e;
+  word-break: break-all;
+  max-height: 150px;
+  padding: 0 0 0 10px;
 `;
